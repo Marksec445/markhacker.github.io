@@ -401,9 +401,7 @@ height:50vh;
         <div class="container container-unloaded">
             <main class="main post-page">
     <article class="article-entry">
-        <blockquote><br>  最近在工作中遇到了lotus的邮件系统，但在对于lotus的研究中发现，在使用metastploit的auxiliary/scanner/lotus/lotus_domino_hashes的时候，出现了报错，在显示了第一行的用户名和密码后，就直接报错了，在查询资料了解到lotus&gt;=9.0，登陆功能发生了变化，无法使用。<br></blockquote>
-
-<p>metasploit的中的lotus用户名密码导出模块auxiliary/scanner/lotus/lotus_domino_hashes的两处修改：</p>
+        <p><blockquote><br>  最近在工作中遇到了lotus的邮件系统，但在对于lotus的研究中发现，在使用metastploit的auxiliary/scanner/lotus/lotus_domino_hashes的时候，出现了报错，在显示了第一行的用户名和密码后，就直接报错了，在查询资料了解到lotus&gt;=9.0，登陆功能发生了变化，无法使用。<br></blockquote><br><a id="more"></a><br>metasploit的中的lotus用户名密码导出模块auxiliary/scanner/lotus/lotus_domino_hashes的两处修改：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">第一处：       </span><br><span class="line">       res = send_request_raw(&#123;</span><br><span class="line">          &apos;method&apos;  =&gt; &apos;GET&apos;,</span><br><span class="line">         &apos;uri&apos;     =&gt; &quot;#&#123;$uri&#125;\/$defaultview?Readviewentries&quot;,</span><br><span class="line">第二处：</span><br><span class="line">          :source_id =&gt; domino_svc.id,</span><br></pre></td></tr></table></figure>
 <p>修改成</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">第一处：        </span><br><span class="line">        res = send_request_cgi(&#123;</span><br><span class="line">          &apos;uri&apos;     =&gt; &apos;/names.nsf/$defaultview?Readviewentries&apos;,</span><br><span class="line">第二处：</span><br><span class="line">           #:source_id =&gt; domino_svc.id,</span><br></pre></td></tr></table></figure>
@@ -419,13 +417,18 @@ height:50vh;
             <p>原文作者：<a href="https://www.marksec.org">mark</a>
             </p><p>原文链接：<a href="https://www.marksec.org/2019/04/04/lotus模块修改/">https://www.marksec.org/2019/04/04/lotus模块修改/</a>
             </p><p>发表日期：<a href="https://www.marksec.org/2019/04/04/lotus模块修改/">April 4th 2019, 4:13:00 pm</a>
-            </p><p>更新日期：<a href="https://www.marksec.org/2019/04/04/lotus模块修改/">April 4th 2019, 6:24:36 pm</a>
+            </p><p>更新日期：<a href="https://www.marksec.org/2019/04/04/lotus模块修改/">April 10th 2019, 9:36:47 pm</a>
             </p><p>版权声明：本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
         </div>
     
     <!-- paginator  -->
     <ul class="post-paginator">
         <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href="/2019/04/10/内网渗透之smbclient工具学习/" title="内网渗透之smblient工具学习">
+                    <div class="nextTitle">内网渗透之smblient工具学习</div>
+                </a>
             
         </li>
         <li class="previous">
@@ -613,9 +616,16 @@ top:50vh;
     
     
     
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 5
+        Total : 6
         </div>
         <!-- search  -->
         
@@ -628,6 +638,11 @@ top:50vh;
     
     <div class="archive-year"> 2019 </div>
     <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/10</span><a class="archive-post-title" href="/2019/04/10/内网渗透之smbclient工具学习/">内网渗透之smblient工具学习</a>
+        </li>
     
     
         <li class="archive-post-item">
@@ -677,6 +692,8 @@ top:50vh;
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
+        <span class="sidebar-tag-name" data-tags="metasploit"><span class="iconfont-archer">&#xe606;</span>metasploit</span>
+    
         <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
     
         <span class="sidebar-tag-name" data-tags="Web安全"><span class="iconfont-archer">&#xe606;</span>Web安全</span>
@@ -684,8 +701,6 @@ top:50vh;
         <span class="sidebar-tag-name" data-tags="empire"><span class="iconfont-archer">&#xe606;</span>empire</span>
     
         <span class="sidebar-tag-name" data-tags="powershell"><span class="iconfont-archer">&#xe606;</span>powershell</span>
-    
-        <span class="sidebar-tag-name" data-tags="metasploit"><span class="iconfont-archer">&#xe606;</span>metasploit</span>
     
         <span class="sidebar-tag-name" data-tags="无线安全"><span class="iconfont-archer">&#xe606;</span>无线安全</span>
     
