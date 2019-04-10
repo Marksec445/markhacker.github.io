@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.marksec.org/"/>
-  <updated>2019-04-10T13:38:05.633Z</updated>
+  <updated>2019-04-10T14:00:15.749Z</updated>
   <id>https://www.marksec.org/</id>
   
   <author>
@@ -17,11 +17,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>内网渗透之smblient工具学习</title>
+    <title>内网渗透之smbclient工具学习</title>
     <link href="https://www.marksec.org/2019/04/10/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E4%B9%8Bsmbclient%E5%B7%A5%E5%85%B7%E5%AD%A6%E4%B9%A0/"/>
     <id>https://www.marksec.org/2019/04/10/内网渗透之smbclient工具学习/</id>
     <published>2019-04-10T10:13:00.000Z</published>
-    <updated>2019-04-10T13:38:05.633Z</updated>
+    <updated>2019-04-10T14:00:15.749Z</updated>
     
     <content type="html"><![CDATA[<blockquote><br>  最近在渗透中通过代理带入工具发现使用代理反弹rdesktop进行文件查看太过于麻烦，利用metasploit等回连反弹shell也不是特别方便，最近发现使用smbclient进行代理进入内网，通过smb进行磁盘挂载查看，在速度和隐蔽性上都比较的不错。<br></blockquote><p><strong>smbclient命令</strong>属于samba套件，它提供一种命令行使用交互式方式访问samba服务器的共享资源。</p><a id="more"></a><h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">smbclient(选项)(参数)</span><br></pre></td></tr></table></figure><h3 id="选项"><a href="#选项" class="headerlink" title="选项"></a>选项</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">-B&lt;ip地址&gt;：传送广播数据包时所用的IP地址；</span><br><span class="line">-d&lt;排错层级&gt;：指定记录文件所记载事件的详细程度；</span><br><span class="line">-E：将信息送到标准错误输出设备；</span><br><span class="line">-h：显示帮助；</span><br><span class="line">-i&lt;范围&gt;：设置NetBIOS名称范围；</span><br><span class="line">-I&lt;IP地址&gt;：指定服务器的IP地址；</span><br><span class="line">-l&lt;记录文件&gt;：指定记录文件的名称；</span><br><span class="line">-L：显示服务器端所分享出来的所有资源；</span><br><span class="line">-M&lt;NetBIOS名称&gt;：可利用WinPopup协议，将信息送给选项中所指定的主机；</span><br><span class="line">-n&lt;NetBIOS名称&gt;：指定用户端所要使用的NetBIOS名称；</span><br><span class="line">-N：不用询问密码；</span><br><span class="line">-O&lt;连接槽选项&gt;：设置用户端TCP连接槽的选项；</span><br><span class="line">-p&lt;TCP连接端口&gt;：指定服务器端TCP连接端口编号；</span><br><span class="line">-R&lt;名称解析顺序&gt;：设置NetBIOS名称解析的顺序；</span><br><span class="line">-s&lt;目录&gt;：指定smb.conf所在的目录；</span><br><span class="line">-t&lt;服务器字码&gt;：设置用何种字符码来解析服务器端的文件名称；</span><br><span class="line">-T&lt;tar选项&gt;：备份服务器端分享的全部文件，并打包成tar格式的文件；</span><br><span class="line">-U&lt;用户名称&gt;：指定用户名称；</span><br><span class="line">-w&lt;工作群组&gt;：指定工作群组名称。</span><br><span class="line">-C：直接一次性使用smbclient命令</span><br></pre></td></tr></table></figure><h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">列出某个IP地址所提供的共享文件夹</span><br><span class="line">smbclient -L 198.168.0.1 -U username%password</span><br><span class="line"></span><br><span class="line">像ftp客户端一样使用smbclient</span><br><span class="line">smbclient //192.168.0.1/tmp  -U username%password</span><br><span class="line">执行smbclient命令成功后，进入smbclient环境，出现提示符：smb:/&gt;</span><br><span class="line"></span><br><span class="line">直接一次性使用smbclient命令</span><br><span class="line">smbclient -c &quot;ls&quot;  //192.168.0.1/tmp  -U username%password</span><br><span class="line"></span><br><span class="line">注意：在进行smb:/&gt;之后想上传下载文件不能使用绝对路径，相对路径即可</span><br></pre></td></tr></table></figure><h3 id="远程挂载"><a href="#远程挂载" class="headerlink" title="远程挂载"></a>远程挂载</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">使用mount命令可以将目标主机的目录挂在到linux的指定目录下进行操作，此处需要注意权限问题</span><br><span class="line">sudo mount -t cifs -o username=username,file_mode=0777,dir_mode=0777 //192.168.0.1/temp</span><br></pre></td></tr></table></figure>]]></content>
     
@@ -106,9 +106,9 @@
     </summary>
     
     
-      <category term="metasploit" scheme="https://www.marksec.org/tags/metasploit/"/>
-    
       <category term="内网渗透" scheme="https://www.marksec.org/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/"/>
+    
+      <category term="metasploit" scheme="https://www.marksec.org/tags/metasploit/"/>
     
   </entry>
   
