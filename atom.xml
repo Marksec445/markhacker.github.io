@@ -37,20 +37,6 @@
   </entry>
   
   <entry>
-    <title>test</title>
-    <link href="https://www.marksec.org/2019/04/20/test/"/>
-    <id>https://www.marksec.org/2019/04/20/test/</id>
-    <published>2019-04-20T12:01:58.000Z</published>
-    <updated>2019-04-20T12:01:58.843Z</updated>
-    
-    <summary type="html">
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
     <title>内网渗透之smbclient工具学习</title>
     <link href="https://www.marksec.org/2019/04/10/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E4%B9%8Bsmbclient%E5%B7%A5%E5%85%B7%E5%AD%A6%E4%B9%A0/"/>
     <id>https://www.marksec.org/2019/04/10/内网渗透之smbclient工具学习/</id>
